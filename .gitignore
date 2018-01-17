@@ -55,6 +55,6 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-keys
+undergroundbot-v0/keys
 .env
 
