@@ -68,7 +68,7 @@ client.on('raw', async event => {
   let {d: data} = event;
   let channel = client.channels.get(data.channel_id);  // there is prob a better way to check but eh its 2
   if (client.channels.get(data.channel_id)) {  // if its not a dm return
-    // if (data.channel_id != '402957479153238017') return; // if its not in the role req channel
+    if (data.channel_id != '402957479153238017') return; // if its not in the role req channel
     client.fetchUser(data.user_id).then(user => {
       channel.fetchMessage(data.message_id).then(message => {
         let reaction = message.reactions.get(data.emoji.id || data.emoji.name);
