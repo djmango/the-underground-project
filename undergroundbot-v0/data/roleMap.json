@@ -1,0 +1,94 @@
+{
+    "roles": [
+        {
+            "roleId": "394614344417280010",
+            "name": "youtuber",
+            "emojiId": "⏯"
+        },
+        {
+            "roleId": "394941146956300289",
+            "name": "artist",
+            "emojiId": "🖌"
+        },
+        {
+            "roleId": "400463556098916352",
+            "name": "programmer",
+            "emojiId": "🖥"
+        },
+        {
+            "roleId": "400461660948660234",
+            "name": "gamer",
+            "emojiId": "🎮"
+        },
+        {
+            "roleId": "400461564383330314",
+            "name": "athletic",
+            "emojiId": "⚾️"
+        },
+        {
+            "roleId": "400462732098273280",
+            "name": "smart",
+            "emojiId": "🎓"
+        },
+        {
+            "roleId": "400462796824772623",
+            "name": "quiet",
+            "emojiId": "😶"
+        },
+        {
+            "roleId": "400462841628590080",
+            "name": "loud",
+            "emojiId": "😱"
+        },
+        {
+            "roleId": "400463044603412492",
+            "name": "nice",
+            "emojiId": "👍"
+        },
+        {
+            "roleId": "400461797653741578",
+            "name": "7-12",
+            "emojiId": "🎖"
+        },
+        {
+            "roleId": "400461886828707851",
+            "name": "13-15",
+            "emojiId": "🥉"
+        },
+        {
+            "roleId": "400461937496031233",
+            "name": "16-18",
+            "emojiId": "🥈"
+        },
+        {
+            "roleId": "400461991719993354",
+            "name": "19-21",
+            "emojiId": "🥇"
+        },
+        {
+            "roleId": "400462024066203649",
+            "name": "23-30",
+            "emojiId": "🏅"
+        },
+        {
+            "roleId": "400462070413262849",
+            "name": "30+",
+            "emojiId": "💎"
+        },
+        {
+            "roleId": "400462898264145932",
+            "name": "active",
+            "emojiId": "🔘"
+        },
+        {
+            "roleId": "400462933726855169",
+            "name": "please @ me",
+            "emojiId": "🔵"
+        },
+        {
+            "roleId": "400462978912092160",
+            "name": "dont @ me",
+            "emojiId": "🔴"
+        }
+    ]
+}
