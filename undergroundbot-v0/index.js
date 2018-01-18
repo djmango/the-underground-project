@@ -8,12 +8,9 @@ global.fs = require('fs');
 global.os = require('os');
 global.request = require('request');
 global.striptags = require('striptags');
-global.ai = require('apiai');
 global.crashreporter = require('crashreporter');
 global.dateFormat = require('dateformat');
 global.prettyMs = require('pretty-ms');
-global.imageDownloader = require('image-downloader');
-global.mysql = require('mysql');
 global.ud = require('urban-dictionary');
 global.startTime = process.hrtime();
 // pull keys file
@@ -128,10 +125,10 @@ client.on('guildMemberAdd', (member) => {  // welcome a new member and send them
 
 client.on(
     'messageReactionAdd',
-    (reaction, user) => {  // this is for checking for role reactions
+    async (reaction, user) => {  // this is for checking for role reactions
       let emoji = reaction.emoji.name;
       let roleMap = JSON.parse(fs.readFileSync('data/roleMap.json'));
-      let undGuild = client.guilds.get('386311668155547660');
+      let undGuild = await client.guilds.get('386311668155547660');
       for (let i = 0; i < roleMap.roles.length; i++) {
         if (emoji == roleMap.roles[i].emojiId) {
           let desRole = undGuild.roles.get(roleMap.roles[i].roleId);

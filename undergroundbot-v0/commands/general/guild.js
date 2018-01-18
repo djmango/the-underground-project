@@ -18,7 +18,7 @@ module.exports = class SayCommand extends Command {
 	async run(msg) {
 		if (!msg.guild) return msg.reply('This is not a guild!');
 		let embed = new RichEmbed()
-			.setAuthor('MangoBot')
+			.setAuthor('UndergroundBot')
 			.setDescription('Server info:', msg.guild.iconURL)
 			.setColor("ffa735")
 			.addField("Server name:", `${msg.guild.name}`)
