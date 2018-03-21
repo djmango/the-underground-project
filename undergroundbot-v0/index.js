@@ -16,9 +16,11 @@ global.startTime = process.hrtime();
 // pull keys file
 console.log('pulling keys...');
 const keys = JSON.parse(fs.readFileSync('./keys/keys.json')); // read all keys
+
 // keys
 global.token = keys.discordtoken; // discord api key
 global.botsudoid = keys.botsudo; // bot sudo id
+
 // bot settings
 console.log('configuring bot...');
 // set prefix
@@ -31,10 +33,12 @@ global.client = new Commando.Client({
   unknownCommandResponse: false
 });
 global.discordClient = new Discord.Client();
+
 // command groups
 client.registry.registerDefaultTypes()
   .registerGroups([
     ['general', 'general commands'],
+    ['admin', 'administration commands'],
     ['fun', 'commands just for fun'],
     ['utility', 'generally useful commands']
   ])
@@ -47,9 +51,9 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   global.servers = (`Servers:\n${client.guilds.map(g => g.name).join("\n")}`);
   console.log(`Servers:\n${client.guilds.map(g => g.name).join("\n")}`);
-  let localUsers = client.guilds.get('386311668155547660').memberCount;
+  let localUsers = client.users.size;;
   let updatePres = setInterval(function () {
-    let localUsers = client.users.array().length;
+    let localUsers = client.users.size;
     client.user.setPresence({
       game: {
         name: `${prefix}help | ${localUsers} users`,
