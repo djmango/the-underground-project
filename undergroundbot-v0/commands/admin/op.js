@@ -19,12 +19,11 @@ module.exports = class SayCommand extends Command {
 	}
 	async run(msg, args) {
 		let adminList = JSON.parse(fs.readFileSync('./data/botAdmins.json'));
-		let message = msg.content.split(" ");
 		let mentions = msg.mentions.users.array()[0]
 		if (!mentions) return msg.reply('you must mention someone or not add any extra arguments!');
 		if (adminList.includes(msg.author.id) == false) return msg.reply('You are not a bot admin.');
 		else {
-			if (adminList[mentions.username]) return msg.reply(`${mentions.username} is already an admin!`);
+			if (adminList.includes(mentions.id)) return msg.reply(`${mentions.username} is already an admin!`);
 			adminList.push(mentions.id)
 			fs.writeFileSync('./data/botAdmins.json', JSON.stringify(adminList)), (err) => {
 				if (err) throw err;

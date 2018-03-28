@@ -9,8 +9,6 @@ global.os = require('os');
 global.request = require('request');
 global.striptags = require('striptags');
 global.crashreporter = require('crashreporter');
-global.dateFormat = require('dateformat');
-global.prettyMs = require('pretty-ms');
 global.ud = require('urban-dictionary');
 global.startTime = process.hrtime();
 // pull keys file
@@ -88,8 +86,29 @@ client.on('raw', async event => {
   }
 })
 
-client.on('guildMemberAdd', (member) => { // welcome a new member and send them
-  // the role chooser
+// 
+global.cooldownCheck = function(userId, command) { // returns the amount of time left on a cooldown
+  let cooldowns = JSON.parse(fs.readFileSync('./data/cooldowns.json'));
+  if (cooldowns[userId]) {
+    if (cooldowns[userId][command]) {
+      let timeRemaining = (parseInt(cooldowns[userId][command]) - Date.now())
+      if (timeRemaining > 0) { // if the cooldown end time has not been reached, return remaining time
+        return timeRemaining
+      }
+      else { // if the cooldown end time has been reached, remove the cooldown entry
+        delete cooldowns[userId][command]
+        fs.writeFileSync('./data/cooldowns.json', JSON.stringify(cooldowns)), (err) => {
+          if (err) throw err;
+        }
+        return 1
+      }
+    }
+    else return 2
+  }
+  else return 0
+}
+
+client.on('guildMemberAdd', (member) => { // welcome a new member and send them the role chooser
   let roleMap = JSON.parse(fs.readFileSync('data/roleMap.json'));
   let filter = (user) => user.bot === false;
   console.log(`${member.user.username} has joined!`);
