@@ -22,7 +22,7 @@ module.exports = class SayCommand extends Command {
 		var cpuUse = ("1 min: " + os.loadavg()[0] + "5 min: " + os.loadavg()[1] + "15 min: " + os.loadavg()[2])
 
 		let embed = new RichEmbed()
-			.setAuthor('MangoBot')
+			.setAuthor('Underground Bot')
 			.setDescription(msg.author.username, msg.author.displayAvatarURL)
 			.setColor("ffa735")
 			.addField("Bot Uptime :clock4:", `${uptime}`)

@@ -11,6 +11,7 @@ global.striptags = require('striptags');
 global.crashreporter = require('crashreporter');
 global.ud = require('urban-dictionary');
 global.startTime = process.hrtime();
+global.projectPath = process.cwd();
 // pull keys file
 console.log('pulling keys...');
 const keys = JSON.parse(fs.readFileSync('./keys/keys.json')); // read all keys
@@ -88,7 +89,7 @@ client.on('raw', async event => {
 
 // 
 global.cooldownCheck = function(userId, command) { // returns the amount of time left on a cooldown
-  let cooldowns = JSON.parse(fs.readFileSync('./data/cooldowns.json'));
+  let cooldowns = JSON.parse(fs.readFileSync(projectPath + '/data/cooldowns.json'));
   if (cooldowns[userId]) {
     if (cooldowns[userId][command]) {
       let timeRemaining = (parseInt(cooldowns[userId][command]) - Date.now())
@@ -97,19 +98,19 @@ global.cooldownCheck = function(userId, command) { // returns the amount of time
       }
       else { // if the cooldown end time has been reached, remove the cooldown entry
         delete cooldowns[userId][command]
-        fs.writeFileSync('./data/cooldowns.json', JSON.stringify(cooldowns)), (err) => {
+        fs.writeFileSync(projectPath + '/data/cooldowns.json', JSON.stringify(cooldowns)), (err) => {
           if (err) throw err;
         }
-        return 1
+        return 0
       }
     }
-    else return 2
+    else return 0
   }
   else return 0
 }
 
 client.on('guildMemberAdd', (member) => { // welcome a new member and send them the role chooser
-  let roleMap = JSON.parse(fs.readFileSync('data/roleMap.json'));
+  let roleMap = JSON.parse(fs.readFileSync(projectPath + '/data/roleMap.json'));
   let filter = (user) => user.bot === false;
   console.log(`${member.user.username} has joined!`);
   member.send('https://imgur.com/a/H9eIw');
