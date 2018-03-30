@@ -10,8 +10,11 @@ global.request = require('request');
 global.striptags = require('striptags');
 global.crashreporter = require('crashreporter');
 global.ud = require('urban-dictionary');
+
+// global vars
 global.startTime = process.hrtime();
 global.projectPath = process.cwd();
+
 // pull keys file
 console.log('pulling keys...');
 const keys = JSON.parse(fs.readFileSync('./keys/keys.json')); // read all keys
@@ -48,8 +51,7 @@ client.registry.registerDefaultTypes()
 // ready?
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  global.servers = (`Servers:\n${client.guilds.map(g => g.name).join("\n")}`);
-  console.log(`Servers:\n${client.guilds.map(g => g.name).join("\n")}`);
+  global.undGuild = client.guilds.get('386311668155547660');
   let localUsers = client.users.size;;
   let updatePres = setInterval(function () {
     let localUsers = client.users.size;
@@ -59,8 +61,27 @@ client.on('ready', () => {
         type: 0
       }
     });
-  }, 60000);
+  }, 600000);
   updatePres;
+  let commandQueueExecuter = setInterval(function () {
+    let commandQueue = JSON.parse(fs.readFileSync('./data/commandQueue.json'));
+    for (let i = 0; i < commandQueue.length; i++) {
+      if (commandQueue[i]) {
+        if (commandQueue[i].command == "unmute") {
+          if (commandQueue[i].executeTime < Date.now()) {
+            undGuild.fetchMember(commandQueue[i].data).then(guildUser => {
+              guildUser.removeRole("386332618247110656", 'mute timer expired');
+            });
+            delete commandQueue[i]
+          }
+        }
+      }
+    }
+    fs.writeFileSync('./data/commandQueue.json', JSON.stringify(commandQueue)), (err) => {
+      if (err) throw err;
+    }
+  }, 1000);
+  commandQueueExecuter;
 });
 
 // raw event handler for uncached messages
