@@ -10,6 +10,7 @@ global.request = require('request');
 global.striptags = require('striptags');
 global.crashreporter = require('crashreporter');
 global.ud = require('urban-dictionary');
+global.sqlite = require('sqlite3');
 
 // global vars
 global.startTime = process.hrtime();
@@ -22,6 +23,9 @@ const keys = JSON.parse(fs.readFileSync('./keys/keys.json')); // read all keys
 // keys
 global.token = keys.discordtoken; // discord api key
 global.botsudoid = keys.botsudo; // bot sudo id
+
+// db
+global.db = new sqlite3.Database('./data/database.db');
 
 // bot settings
 console.log('configuring bot...');
