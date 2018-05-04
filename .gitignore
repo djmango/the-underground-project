@@ -58,3 +58,4 @@ typings/
 keys
 .env
 .vscode/
+.db

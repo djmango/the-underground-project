@@ -24,7 +24,7 @@ module.exports = class SayCommand extends Command {
         let mentions = msg.mentions.users.array()[0];
         let time = parseInt(args.text.split(" ")[1]);
         let timeRemaining = await cooldownCheck(msg.mentions.users.array()[0].id, "mute")
-        if (!time) return msg.reply('That\s not a number dimwit');
+        if (!time) return msg.reply('That\s not a number, dimwit');
         if (!mentions) return msg.reply('you must mention someone or not add any extra arguments!');
         if (adminList.includes(msg.author.id) == false) return msg.reply('You are not a bot admin.');
         else {

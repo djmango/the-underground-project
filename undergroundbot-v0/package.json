@@ -27,6 +27,7 @@
     "format": "^0.2.2",
     "format-duration": "^1.0.0",
     "fs": "0.0.1-security",
+    "node-pre-gyp": "^0.10.0",
     "os": "^0.1.1",
     "pretty-ms": "^3.0.1",
     "request": "^2.81.0",

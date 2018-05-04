@@ -18,25 +18,21 @@ module.exports = class SayCommand extends Command {
 		});
 	}
 	async run(msg, args) {
-		let adminList = JSON.parse(fs.readFileSync('./data/botAdmins.json'));
 		let mentions = msg.mentions.users.array()[0]
 		if (!mentions) return msg.reply('you must mention someone or not add any extra arguments!')
-		if (adminList.includes(msg.author.id) == false) return msg.reply('You are not a bot admin.');
-		else {
-			if (adminList.includes(mentions.id)) {
-				if (mentions.id == botsudoid) {
-					delete adminList[adminList.indexOf(message.author.id)]
-					fs.writeFileSync('./data/botAdmins.json', JSON.stringify(adminList)), (err) => {
-						if (err) throw err;
-					}
-					return msg.reply('You can\'t do that. You have been removed from the admin list because you are mean.')
-				}
-				delete adminList[adminList.indexOf(mentions.id)]
-				fs.writeFileSync('./data/botAdmins.json', JSON.stringify(adminList)), (err) => {
-					if (err) throw err;
-				}
-				return msg.reply(`Succesfully removed ${mentions.username} from the admin list!`);
-			} else return msg.reply(`${mentions.username} is not an admin!`);
-		}
+		adminCheck("193066810470301696", function (result) {
+			if (result == true) {
+				iadminCheck("193066810470301696", function (result) {
+					if (result == true) {
+						if (mentions.id == botsudoid) {
+							db.exec(`delete from admins where id=${message.author.id}`)
+							return msg.reply('You can\'t do that. You have been removed from the admin list because you are mean.')
+						}
+						db.exec(`delete from admins where id=${mentions.id}`)
+						return msg.reply(`Succesfully removed ${mentions.username} from the admin list!`);
+					} else return msg.reply(`${mentions.username} is not an admin!`);
+				})
+			} else return msg.reply('You are not a bot admin.');
+		})
 	}
 };

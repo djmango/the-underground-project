@@ -10,7 +10,7 @@ global.request = require('request');
 global.striptags = require('striptags');
 global.crashreporter = require('crashreporter');
 global.ud = require('urban-dictionary');
-global.sqlite = require('sqlite3');
+global.sqlite3 = require('sqlite3');
 
 // global vars
 global.startTime = process.hrtime();
@@ -24,13 +24,44 @@ const keys = JSON.parse(fs.readFileSync('./keys/keys.json')); // read all keys
 global.token = keys.discordtoken; // discord api key
 global.botsudoid = keys.botsudo; // bot sudo id
 
-// db
-global.db = new sqlite3.Database('./data/database.db');
+// db stuff
+
+// check if db exists
+fs.stat('./data/database.db', async function (err, stat) {
+  if (err == null) {
+    console.log('database found, connecting...');
+    global.db = await new sqlite3.Database('./data/database.db');
+  } else if (err.code == 'ENOENT') {
+    // database does not exist
+    console.log('database does not exist, creating and populating...')
+    global.db = await new sqlite3.Database('./data/database.db');
+    migrate()
+  } else {
+    console.log('Some other error: ', err.code);
+  }
+});
+
+// db migrate function
+function migrate() {
+  // admins table, {id, level}
+  db.exec("create table admins (id varchar(25), level varchar(2))")
+  
+  // command queue table {command, executeTime, data}
+  db.exec("create table commandQueue (command varchar(15), executeTime varchar(11), data varchar(250))")
+  
+  // cooldowns table {id, command, time}
+  db.exec("create table cooldowns (id varchar(25), command varchar(15), time varchar(11))")
+
+  // admin me
+  db.exec("insert into admins values (193066810470301696, 0)")
+}
 
 // bot settings
 console.log('configuring bot...');
+
 // set prefix
 global.prefix = '//';
+
 // make client global
 global.client = new Commando.Client({
   owner: botsudoid,
@@ -54,7 +85,7 @@ client.registry.registerDefaultTypes()
 
 // ready?
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`logged in as ${client.user.tag}`);
   global.undGuild = client.guilds.get('386311668155547660');
   let localUsers = client.users.size;;
   let updatePres = setInterval(function () {
@@ -112,7 +143,7 @@ client.on('raw', async event => {
   }
 })
 
-// 
+// cooldown checker
 global.cooldownCheck = function(userId, command) { // returns the amount of time left on a cooldown
   let cooldowns = JSON.parse(fs.readFileSync(projectPath + '/data/cooldowns.json'));
   if (cooldowns[userId]) {
@@ -132,6 +163,15 @@ global.cooldownCheck = function(userId, command) { // returns the amount of time
     else return 0
   }
   else return 0
+}
+
+// admin checker
+global.adminCheck = function(userId, callback) { // returns true or false based on if a user is an admin
+  db.get(`select * from admins where id=${userId}`, function(err, row) {
+    if (err) console.log(err)
+    else if (row) callback(true)
+    else return callback(false)
+  })
 }
 
 client.on('guildMemberAdd', (member) => { // welcome a new member and send them the role chooser
