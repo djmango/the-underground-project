@@ -98,23 +98,18 @@ client.on('ready', () => {
     });
   }, 600000);
   updatePres;
+
+  // command queue executer
   let commandQueueExecuter = setInterval(function () {
-    let commandQueue = JSON.parse(fs.readFileSync('./data/commandQueue.json'));
-    for (let i = 0; i < commandQueue.length; i++) {
-      if (commandQueue[i]) {
-        if (commandQueue[i].command == "unmute") {
-          if (commandQueue[i].executeTime < Date.now()) {
-            undGuild.fetchMember(commandQueue[i].data).then(guildUser => {
-              guildUser.removeRole("386332618247110656", 'mute timer expired');
-            });
-            delete commandQueue[i]
-          }
-        }
+    db.exec(`delete * from cooldowns where time<${Date.now()}`)
+    db.run(`select * from commandQueue where time<=${Date.now()}`, function(err, rows) {
+      if (rows[command] == "unmute") {
+        undGuild.fetchMember(commandQueue[i].data).then(guildUser => {
+          guildUser.removeRole("386332618247110656", 'mute timer expired');
+        });
       }
-    }
-    fs.writeFileSync('./data/commandQueue.json', JSON.stringify(commandQueue)), (err) => {
-      if (err) throw err;
-    }
+    })
+    db.exec(`delete * from commandQueue where executeTime<${Date.now()}`)
   }, 1000);
   commandQueueExecuter;
 });
@@ -144,25 +139,18 @@ client.on('raw', async event => {
 })
 
 // cooldown checker
-global.cooldownCheck = function(userId, command) { // returns the amount of time left on a cooldown
-  let cooldowns = JSON.parse(fs.readFileSync(projectPath + '/data/cooldowns.json'));
-  if (cooldowns[userId]) {
-    if (cooldowns[userId][command]) {
-      let timeRemaining = (parseInt(cooldowns[userId][command]) - Date.now())
-      if (timeRemaining > 0) { // if the cooldown end time has not been reached, return remaining time
-        return timeRemaining
-      }
-      else { // if the cooldown end time has been reached, remove the cooldown entry
-        delete cooldowns[userId][command]
-        fs.writeFileSync(projectPath + '/data/cooldowns.json', JSON.stringify(cooldowns)), (err) => {
-          if (err) throw err;
-        }
-        return 0
-      }
+global.cooldownCheck = function(userId, command, callback) { // returns the amount of time left on a cooldown
+  db.run(`select * from cooldowns where id=${userId} and command=${command} and time>${Date.now()}}`, function(err, rows) {
+    if (err) console.error(err), callback(0)
+    else if (rows) { // if the cooldown end time has not been reached, return remaining time
+      let timeRemaining = (parseInt(rows[time]) - Date.now())
+      callback(timeRemaining)
     }
-    else return 0
-  }
-  else return 0
+    else { // if the cooldown end time has been reached, remove the cooldown entry
+      db.exec(`delete * from cooldowns where time<${Date.now()}`)
+      callback(0)
+    }
+  })
 }
 
 // admin checker

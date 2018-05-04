@@ -20,10 +20,10 @@ module.exports = class SayCommand extends Command {
 	async run(msg, args) {
 		let mentions = msg.mentions.users.array()[0]
 		if (!mentions) return msg.reply('you must mention someone or not add any extra arguments!');
-		adminCheck("193066810470301696", function (result) {
+		adminCheck(msg.author.id, function (result) {
 			if (result == false) return msg.reply('You are not a bot admin.');
 			else {
-				adminCheck("193066810470301696", function (result) {
+				adminCheck(mentions.id, function (result) {
 					if (result == true) return msg.reply(`${mentions.username} is already an admin!`);
 					else {
 						db.exec(`insert into admins values (${mentions.id}, 3)`)

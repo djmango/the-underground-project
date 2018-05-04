@@ -12,42 +12,54 @@ module.exports = class SayCommand extends Command {
             examples: ['mute @djmango 30'],
             args: [{
                 key: 'text',
-                prompt: 'Who would you like to mute and for how long?',
+                prompt: 'Who would you like to mute and for how many minutes?',
                 type: 'string'
             }]
         });
     }
     async run(msg, args) {
-        let adminList = JSON.parse(fs.readFileSync('./data/botAdmins.json'));
-        let cooldowns = JSON.parse(fs.readFileSync('./data/cooldowns.json'));
-        let commandQueue = JSON.parse(fs.readFileSync('./data/commandQueue.json'));
         let mentions = msg.mentions.users.array()[0];
         let time = parseInt(args.text.split(" ")[1]);
         let timeRemaining = await cooldownCheck(msg.mentions.users.array()[0].id, "mute")
         if (!time) return msg.reply('That\s not a number, dimwit');
         if (!mentions) return msg.reply('you must mention someone or not add any extra arguments!');
-        if (adminList.includes(msg.author.id) == false) return msg.reply('You are not a bot admin.');
-        else {
-            if (adminList[mentions.username]) return msg.reply(`${mentions.username} is an admin!`);
-            let timeRemainingFormatted = format(timeRemaining)
-            if (timeRemaining != 0) return msg.reply(`Slow down pal! Remaining cooldown: \`${timeRemainingFormatted}\``)
-            cooldowns[msg.author.id]["mute"] = Date.now() + 1800000
-            fs.writeFileSync('./data/cooldowns.json', JSON.stringify(cooldowns)), (err) => {
-                if (err) throw err;
+        if (adminList.includes(msg.author.id) == false) 
+        adminCheck(msg.author.id, function (result) {
+            if (result == true) {
+                adminCheck(msg.author.id, async function (result) { 
+                    if (result == true) return msg.reply(`${mentions.username} is an admin!`);
+                    else {
+                        // check if our dear author is on a cooldown
+                        let timeRemainingFormatted = format(timeRemaining)
+                        if (timeRemaining != 0) return msg.reply(`Slow down pal! Remaining cooldown: \`${timeRemainingFormatted}\``)
+
+                        // oh good! author wasnt on cooldown, now he is
+                        let cooldownTime = Date.now() + 1800000
+
+                        // insert into cooldowns table
+                        db.exec(`insert into cooldowns values (${message.author.id}, mute, ${cooldownTime})`)
+
+                        // format commandQueue entries
+                        let command = {}
+                        command[command] = "unmute"
+                        command[executeTime] = Date.now() + (time * 60000)
+                        command[data] = mentions.id
+
+                        // insert into commandQueue table
+                        db.exec(`insert into commandQueue values (mute, ${command[executeTime]}, ${command[data]})`)
+
+                        // apply the mute role
+                        let undGuild = await client.guilds.get('386311668155547660');
+                        undGuild.fetchMember(mentions).then(guildUser => {
+                            guildUser.addRole("386332618247110656", 'muted by admin');
+                        });
+                        return msg.reply(`Muted ${mentions.username} for ${time} minutes!`);
+                    }
+                })
             }
-            let command = {}
-            command["command"] = "unmute"
-            command["executeTime"] = Date.now() + (time * 60000)
-            command["data"] = mentions.id
-            commandQueue.push(command)
-            fs.writeFileSync('./data/commandQueue.json', JSON.stringify(commandQueue)), (err) => {
-                if (err) throw err;
-            }
-            let undGuild = await client.guilds.get('386311668155547660');
-            undGuild.fetchMember(mentions).then(guildUser => {
-                guildUser.addRole("386332618247110656", 'muted by admin');
-            });
-            return msg.reply(`Muted ${mentions.username} for ${time} minutes!`);
-        }
+            else return msg.reply('You are not a bot admin.');
+
+        })
+ 
     }
 };
