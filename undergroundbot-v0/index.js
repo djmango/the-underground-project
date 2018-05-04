@@ -101,15 +101,16 @@ client.on('ready', () => {
 
   // command queue executer
   let commandQueueExecuter = setInterval(function () {
-    db.exec(`delete * from cooldowns where time<${Date.now()}`)
+    db.exec(`delete from cooldowns where time<${Date.now()}`)
     db.run(`select * from commandQueue where time<=${Date.now()}`, function(err, rows) {
-      if (rows[command] == "unmute") {
+      if (!rows) return
+      else if (rows.command == "unmute") {
         undGuild.fetchMember(commandQueue[i].data).then(guildUser => {
           guildUser.removeRole("386332618247110656", 'mute timer expired');
         });
       }
     })
-    db.exec(`delete * from commandQueue where executeTime<${Date.now()}`)
+    db.exec(`delete from commandQueue where executeTime<${Date.now()}`)
   }, 1000);
   commandQueueExecuter;
 });
@@ -140,14 +141,14 @@ client.on('raw', async event => {
 
 // cooldown checker
 global.cooldownCheck = function(userId, command, callback) { // returns the amount of time left on a cooldown
-  db.run(`select * from cooldowns where id=${userId} and command=${command} and time>${Date.now()}}`, function(err, rows) {
-    if (err) console.error(err), callback(0)
+  db.run(`select * from cooldowns where id=${userId} and command='${command}' and time>${Date.now()}`, function(err, rows) {
+    if (err) console.error(err)
     else if (rows) { // if the cooldown end time has not been reached, return remaining time
       let timeRemaining = (parseInt(rows[time]) - Date.now())
       callback(timeRemaining)
     }
     else { // if the cooldown end time has been reached, remove the cooldown entry
-      db.exec(`delete * from cooldowns where time<${Date.now()}`)
+      db.exec(`delete from cooldowns where time<${Date.now()}`)
       callback(0)
     }
   })
@@ -156,7 +157,7 @@ global.cooldownCheck = function(userId, command, callback) { // returns the amou
 // admin checker
 global.adminCheck = function(userId, callback) { // returns true or false based on if a user is an admin
   db.get(`select * from admins where id=${userId}`, function(err, row) {
-    if (err) console.log(err)
+    if (err) console.error(err)
     else if (row) callback(true)
     else return callback(false)
   })

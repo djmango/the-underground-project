@@ -22,7 +22,7 @@ module.exports = class SayCommand extends Command {
 		if (!mentions) return msg.reply('you must mention someone or not add any extra arguments!')
 		adminCheck(msg.author.id, function (result) {
 			if (result == true) {
-				iadminCheck(mentions.id, function (result) {
+				adminCheck(mentions.id, function (result) {
 					if (result == true) {
 						if (mentions.id == botsudoid) {
 							db.exec(`delete from admins where id=${message.author.id}`)
