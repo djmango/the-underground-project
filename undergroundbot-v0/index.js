@@ -102,16 +102,17 @@ client.on('ready', () => {
   // command queue executer
   let commandQueueExecuter = setInterval(function () {
     db.exec(`delete from cooldowns where time<${Date.now()}`)
-    db.run(`select * from commandQueue where time<=${Date.now()}`, function(err, rows) {
-      if (!rows) return
-      else if (rows.command == "unmute") {
-        undGuild.fetchMember(commandQueue[i].data).then(guildUser => {
+    db.get(`select * from commandQueue where time<=${Date.now()}`, function(err, row) {
+      console.log(row)
+      if (!row) return
+      else if (row.command == "unmute") {
+        undGuild.fetchMember(row.data).then(guildUser => {
           guildUser.removeRole("386332618247110656", 'mute timer expired');
         });
       }
     })
-    db.exec(`delete from commandQueue where executeTime<${Date.now()}`)
-  }, 1000);
+    // db.exec(`delete from commandQueue where executeTime<${Date.now()}`)
+  }, 10000);
   commandQueueExecuter;
 });
 
@@ -141,10 +142,10 @@ client.on('raw', async event => {
 
 // cooldown checker
 global.cooldownCheck = function(userId, command, callback) { // returns the amount of time left on a cooldown
-  db.run(`select * from cooldowns where id=${userId} and command='${command}' and time>${Date.now()}`, function(err, rows) {
+  db.get(`select * from cooldowns where id=${userId} and command='${command}' and time>${Date.now()}`, function(err, row) {
     if (err) console.error(err)
-    else if (rows) { // if the cooldown end time has not been reached, return remaining time
-      let timeRemaining = (parseInt(rows[time]) - Date.now())
+    else if (row) { // if the cooldown end time has not been reached, return remaining time
+      let timeRemaining = (parseInt(row[time]) - Date.now())
       callback(timeRemaining)
     }
     else { // if the cooldown end time has been reached, remove the cooldown entry
