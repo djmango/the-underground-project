@@ -103,7 +103,6 @@ client.on('ready', () => {
   let commandQueueExecuter = setInterval(function () {
     db.exec(`delete from cooldowns where time<${Date.now()}`)
     db.get(`select * from commandQueue where time<=${Date.now()}`, function(err, row) {
-      console.log(row)
       if (!row) return
       else if (row.command == "unmute") {
         undGuild.fetchMember(row.data).then(guildUser => {
