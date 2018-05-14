@@ -144,7 +144,7 @@ global.cooldownCheck = function(userId, command, callback) { // returns the amou
   db.get(`select * from cooldowns where id=${userId} and command='${command}' and time>${Date.now()}`, function(err, row) {
     if (err) console.error(err)
     else if (row) { // if the cooldown end time has not been reached, return remaining time
-      let timeRemaining = (parseInt(row[time]) - Date.now())
+      let timeRemaining = (parseInt(row['time']) - Date.now())
       callback(timeRemaining)
     }
     else { // if the cooldown end time has been reached, remove the cooldown entry
