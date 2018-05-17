@@ -19,7 +19,6 @@ module.exports = class SayCommand extends Command {
   }
   async run(msg, args) {
     let mentions = msg.mentions.members.first();
-    let usernameHold = mentions.username; // once i ban them, i cant get ther name..
     if (!mentions)
       return msg.reply(
         "you must mention someone or not add any extra arguments!"
@@ -46,7 +45,7 @@ module.exports = class SayCommand extends Command {
               return msg.reply("thats an admin doofus, i cant do that");
             } else {
               // oh good! author wasnt on cooldown, now he is
-              let cooldownTime = Date.now() + 1800000;
+              let cooldownTime = Date.now() + 10800000;
 
               // insert into cooldowns table
               db.exec(
@@ -54,10 +53,10 @@ module.exports = class SayCommand extends Command {
                   msg.author.id
                 }, 'ban', ${cooldownTime})`
               );
-              mentions.ban();
-              return msg.reply(
-                `${usernameHold} was banned by ${msg.author.username}`
+              msg.reply(
+                `${mentions.user.username} was banned by ${msg.author.username}`
               );
+              return mentions.ban();
             }
           });
         } else return msg.reply("You are not a bot admin.");

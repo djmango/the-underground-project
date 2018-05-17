@@ -44,18 +44,18 @@ module.exports = class SayCommand extends Command {
               return msg.reply("thats an admin doofus, i cant do that");
             } else {
               // oh good! author wasnt on cooldown, now he is
-              let cooldownTime = Date.now() + 1800000;
+              let cooldownTime = Date.now() + 3600000;
 
               // insert into cooldowns table
               db.exec(
                 `insert into cooldowns values (${
                   msg.author.id
                 }, 'kick', ${cooldownTime})`
+              ); 
+              msg.reply(
+                `${mentions.user.username} was kicked by ${msg.author.username}`
               );
-              mentions.kick();
-              return msg.reply(
-                `${mentions.username} was kicked by ${msg.author.username}`
-              );
+              return mentions.kick();
             }
           });
         } else return msg.reply("You are not a bot admin.");
