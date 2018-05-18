@@ -59,3 +59,4 @@ keys
 .env
 .vscode/
 *.db
+*.sqlite

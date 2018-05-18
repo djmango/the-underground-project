@@ -87,6 +87,7 @@ client.registry.registerDefaultTypes()
 client.on('ready', () => {
   console.log(`logged in as ${client.user.tag}`);
   global.undGuild = client.guilds.get('386311668155547660');
+  global.logChannel = client.channels.get('410274260947304448');
   let localUsers = client.users.size;;
   let updatePres = setInterval(function () {
     let localUsers = client.users.size;
