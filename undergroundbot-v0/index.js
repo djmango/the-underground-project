@@ -1,5 +1,5 @@
-// apis
-console.log('getting apis...');
+// packages
+console.log('getting packages...');
 global.Commando = require('discord.js-commando');
 global.Discord = require('discord.js');
 global.format = require('format-duration');
